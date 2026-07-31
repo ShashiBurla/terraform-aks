@@ -6,6 +6,7 @@ module "db" {
   vm_size        = try(each.value["vm_size"], "Standard_B1s")
 
   rgname    = var.rgname
+  location  = var.location
   image_id  = var.image_id
   env       = var.env
   subnet_id = var.subnet_id

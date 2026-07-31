@@ -16,9 +16,9 @@ resource "azurerm_kubernetes_cluster" "main" {
     type = "SystemAssigned"
   }
 
-  # lifecycle {
-  #   ignore_changes = [default_node_pool]
-  # }
+  lifecycle {
+    ignore_changes = [default_node_pool]
+  }
 
 }
 
