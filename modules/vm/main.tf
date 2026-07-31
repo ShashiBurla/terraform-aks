@@ -1,8 +1,8 @@
 resource "azurerm_network_interface" "main" {
   count               = var.vm_count
   name                = "${var.component_name}-${var.env}-nic${count.index}"
-  location            = data.azurerm_resource_group.main.location
-  resource_group_name = data.azurerm_resource_group.main.name
+  location            = var.location
+  resource_group_name = var.rgname
 
   ip_configuration {
     name                          = "${var.component_name}-${var.env}-nic${count.index}"
@@ -14,12 +14,12 @@ resource "azurerm_network_interface" "main" {
 resource "azurerm_linux_virtual_machine" "main" {
   count                           = var.vm_count
   name                            = "${var.component_name}-${var.env}-${count.index}"
-  location                        = data.azurerm_resource_group.main.location
-  resource_group_name             = data.azurerm_resource_group.main.name
+  location                        = var.location
+  resource_group_name             = var.rgname
   network_interface_ids           = [azurerm_network_interface.main[count.index].id]
   size                            = var.vm_size
-  admin_password                  = data.azurerm_key_vault_secret.ssh_password.value
-  admin_username                  = data.azurerm_key_vault_secret.ssh_username.value
+  admin_password                  = "Shashi@80999"
+  admin_username                  = "burlash"
   source_image_id                 = var.image_id
   disable_password_authentication = false
   secure_boot_enabled             = true
@@ -38,9 +38,8 @@ resource "azurerm_linux_virtual_machine" "main" {
 
 resource "azurerm_dns_a_record" "main" {
   name                = "${var.component_name}-${var.env}"
-  zone_name           = "rdevopsb89.online"
-  resource_group_name = data.azurerm_resource_group.main.name
+  zone_name           = "shashidevops.online"
+  resource_group_name = var.rgname
   ttl                 = 30
   records             = [azurerm_network_interface.main[0].private_ip_address]
 }
-
