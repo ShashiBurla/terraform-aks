@@ -12,6 +12,17 @@ resource "azurerm_kubernetes_cluster" "main" {
     vnet_subnet_id = var.subnet_id
   }
 
+   network_profile {
+    network_plugin     = "azure"
+    service_cidr       = "10.1.0.0/16"       # <-- change to non-overlapping range
+    dns_service_ip     = "10.1.0.10"         # <-- must be inside service_cidr
+  }
+
+  # # Defines the node provisioning profile behavior
+  # node_provisioning_profile {
+  #   mode              = "Auto"
+  # }
+
   identity {
     type = "SystemAssigned"
   }
@@ -31,4 +42,4 @@ resource "azurerm_role_assignment" "registry" {
 }
 
 # Use this command to get the kubeconfig
-# az aks get-credentials --resource-group denmark-east-rg --name roboshop-dev
+# az aks get-credentials --resource-group devops-practiece --name roboshop-dev
