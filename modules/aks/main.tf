@@ -43,3 +43,4 @@ resource "azurerm_role_assignment" "registry" {
 
 # Use this command to get the kubeconfig
 # az aks get-credentials --resource-group devops-practiece --name roboshop-dev
+# az aks get-credentials -g devops-practiece -n roboshop-dev --overwrite-existing
