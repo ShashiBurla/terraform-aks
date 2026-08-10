@@ -20,6 +20,7 @@ module "aks" {
   subnet_id = var.subnet_id
   rg_name     = var.rgname
   rg_location = var.location
-  slack_url  = var.slack_url
+  subscription_id = var.subscription_id
+  tenant_id = var.tenant_id
 }
  

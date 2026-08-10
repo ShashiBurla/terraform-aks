@@ -13,4 +13,3 @@ serviceMonitor:
     release: prometheus-stack
   namespace: ""
   interval: 30s
-
