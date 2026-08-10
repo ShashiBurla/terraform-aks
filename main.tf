@@ -18,8 +18,8 @@ module "aks" {
   source = "./modules/aks"
   env    = var.env
   subnet_id = var.subnet_id
-
   rg_name     = var.rgname
   rg_location = var.location
+  slack_url  = var.slack_url
 }
  

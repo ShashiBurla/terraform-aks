@@ -11,11 +11,15 @@ resource "azurerm_kubernetes_cluster" "main" {
     vm_size    = "Standard_D2s_v3"
     vnet_subnet_id = var.subnet_id
   }
-
+  
+  #  network_profile {
+  #   network_plugin     = "azure"
+  #   service_cidr       = "10.1.0.0/16"       # <-- change to non-overlapping range
+  #   dns_service_ip     = "10.1.0.10"         # <-- must be inside service_cidr
+  # }
    network_profile {
-    network_plugin     = "azure"
-    service_cidr       = "10.1.0.0/16"       # <-- change to non-overlapping range
-    dns_service_ip     = "10.1.0.10"         # <-- must be inside service_cidr
+    network_policy = "azure"
+    network_plugin = "azure"
   }
 
   # # Defines the node provisioning profile behavior
@@ -33,7 +37,6 @@ resource "azurerm_kubernetes_cluster" "main" {
 
 }
 
-
 resource "azurerm_role_assignment" "registry" {
   principal_id                     = azurerm_kubernetes_cluster.main.kubelet_identity[0].object_id
   role_definition_name             = "AcrPull"
@@ -44,3 +47,19 @@ resource "azurerm_role_assignment" "registry" {
 # Use this command to get the kubeconfig
 # az aks get-credentials --resource-group devops-practiece --name roboshop-dev
 # az aks get-credentials -g devops-practiece -n roboshop-dev --overwrite-existing
+resource "azurerm_kubernetes_cluster_node_pool" "pool1" {
+  name                  = "pool1"
+  kubernetes_cluster_id = azurerm_kubernetes_cluster.main.id
+  vm_size               = "Standard_D2s_v3"
+  vnet_subnet_id        = var.subnet_id
+
+  node_count           = 4
+  auto_scaling_enabled = true
+  min_count            = 4
+  max_count            = 20
+
+  lifecycle {
+    ignore_changes = [upgrade_settings]
+  }
+
+}

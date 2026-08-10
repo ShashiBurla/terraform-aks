@@ -1,7 +1,3 @@
-# terraform {
-#   backend "azurerm" {}
-# }
-
 provider "azurerm" {
   features {}
 }
@@ -11,5 +7,15 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "~> 3.112.0"
     }
+  }
+}
+
+# terraform {
+#   backend "azurerm" {}
+# }
+
+provider "helm" {
+  kubernetes = {
+    config_path = "~/.kube/config"
   }
 }
