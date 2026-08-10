@@ -9,7 +9,7 @@ resource "null_resource" "kube-config" {
 
 resource "helm_release" "traefik_ingress" {
 
-  depends_on = [null_resource.kube-config]
+  depends_on = [null_resource.kube-config, helm_release.prometheus_stack]
 
   name       = "traefik"
   repository = "https://traefik.github.io/charts"
@@ -17,6 +17,10 @@ resource "helm_release" "traefik_ingress" {
 
   values = [
     yamlencode({
+      additionalArguments = [
+        "--accesslog=true",
+        "--accesslog.format=json"
+      ]
       metrics = {
         prometheus = {
           enabled              = true
@@ -57,7 +61,7 @@ resource "helm_release" "traefik_ingress" {
 
 resource "helm_release" "prometheus_stack" {
 
-  depends_on = [null_resource.kube-config, helm_release.traefik_ingress, helm_release.external_dns]
+  depends_on = [null_resource.kube-config]
 
   name       = "pstack"
   repository = "oci://ghcr.io/prometheus-community/charts"
@@ -136,7 +140,6 @@ echo '{
 kubectl create secret generic azure-config-file --from-file /tmp/azure.json
 EOF
   }
-
 }
 
 resource "helm_release" "external_dns" {

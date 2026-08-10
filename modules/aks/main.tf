@@ -3,29 +3,21 @@ resource "azurerm_kubernetes_cluster" "main" {
   location            = var.rg_location
   resource_group_name = var.rg_name
   dns_prefix          = "roboshop-${var.env}"
-  kubernetes_version = "1.35.4"
+  kubernetes_version  = "1.35.4"
+  oidc_issuer_enabled = "true"
 
   default_node_pool {
-    name       = "default"
-    node_count = 1
-    vm_size    = "Standard_D2s_v3"
+    name           = "default"
+    node_count     = 1
+    vm_size        = "Standard_D2s_v3"
     vnet_subnet_id = var.subnet_id
   }
-  
-  #  network_profile {
-  #   network_plugin     = "azure"
-  #   service_cidr       = "10.1.0.0/16"       # <-- change to non-overlapping range
-  #   dns_service_ip     = "10.1.0.10"         # <-- must be inside service_cidr
-  # }
-   network_profile {
-    network_policy = "azure"
-    network_plugin = "azure"
-  }
 
-  # # Defines the node provisioning profile behavior
-  # node_provisioning_profile {
-  #   mode              = "Auto"
-  # }
+  network_profile {
+    network_plugin     = "azure"
+    service_cidr       = "10.1.0.0/16"       # <-- change to non-overlapping range
+    dns_service_ip     = "10.1.0.10"         # <-- must be inside service_cidr
+  }
 
   identity {
     type = "SystemAssigned"
@@ -34,7 +26,6 @@ resource "azurerm_kubernetes_cluster" "main" {
   lifecycle {
     ignore_changes = [default_node_pool]
   }
-
 }
 
 resource "azurerm_role_assignment" "registry" {
@@ -47,16 +38,13 @@ resource "azurerm_role_assignment" "registry" {
 # Use this command to get the kubeconfig
 # az aks get-credentials --resource-group devops-practiece --name roboshop-dev
 # az aks get-credentials -g devops-practiece -n roboshop-dev --overwrite-existing
+
 resource "azurerm_kubernetes_cluster_node_pool" "pool1" {
   name                  = "pool1"
   kubernetes_cluster_id = azurerm_kubernetes_cluster.main.id
   vm_size               = "Standard_D2s_v3"
+  node_count            = 2
   vnet_subnet_id        = var.subnet_id
-
-  # auto_scaling_enabled = true
-  node_count           = 4
-  # min_count            = 4
-  # max_count            = 20
 
   lifecycle {
     ignore_changes = [upgrade_settings]
